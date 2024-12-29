@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "antibreak",
+	"version": "${version}",
+	"name": "Anti Item Break",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Fy17"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/antibreak/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"anti.antibreak.AntiItemBreak"
+		],
+		"modmenu": [
+			"anti.antibreak.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"antibreak.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.9",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"recommends": {
+		"modmenu": ">=11.0.0"
+	}
+}

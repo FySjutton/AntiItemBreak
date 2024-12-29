@@ -1,0 +1,11 @@
+{
+  "anti.antibreak.title": "Anti Item Break",
+
+  "anti.antibreak.config.tabs.general": "General",
+
+  "anti.antibreak.config.option.enable_mod": "Enable Mod",
+
+  "anti.antibreak.config.button_text.reset": "Reset",
+  "anti.antibreak.config.button_text.on": "On",
+  "anti.antibreak.config.button_text.off": "Off"
+}
