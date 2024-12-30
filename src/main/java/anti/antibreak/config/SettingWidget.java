@@ -10,8 +10,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,15 +22,23 @@ import static anti.antibreak.ConfigManager.configFile;
 import static anti.antibreak.ConfigManager.defaultConfig;
 
 public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
+    private final ConfigScreen PARENT;
     private final JsonObject editedConfigFile;
     private final ArrayList<String> settings;
-    private final HashMap<String, Boolean> categories = new HashMap<>();
     private final JsonObject itemObject;
+    private final boolean hasSearchBar;
 
-    public SettingWidget(int width, int height, ArrayList<String> settings, JsonObject eCF) {
-        super(MinecraftClient.getInstance(), width, height - 24 - 35, 24, 25);
+    private final HashMap<String, Boolean> categories = new HashMap<>();
+    private final LinkedHashMap<String, List<String>> searchResults = new LinkedHashMap<>();
+
+    private final Identifier searchIcon = Identifier.ofVanilla("icon/search");
+
+    public SettingWidget(int width, int height, ArrayList<String> settings, JsonObject eCF, ConfigScreen parent, boolean hasSearchBar) {
+        super(MinecraftClient.getInstance(), width, height - 24 - 32 + (hasSearchBar ? -25 : 0), 24 + (hasSearchBar ? 25 : 0), 25);
 
         this.settings = settings;
+        this.PARENT = parent;
+        this.hasSearchBar = hasSearchBar;
 
         editedConfigFile = eCF;
         for (String key : configFile.keySet()) {
@@ -40,8 +47,9 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
         itemObject = editedConfigFile.get("items").getAsJsonObject();
 
         for (String setting : settings) {
-            if (setting.contains("_category")) {
-                categories.put(setting, false);
+            categories.put(setting, false);
+            if (hasSearchBar) {
+                searchResults.put(setting, itemCategories.get(setting.split("_")[0]));
             }
         }
 
@@ -50,14 +58,33 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
 
     private void updateEntries() {
         clearEntries();
-        for (String setting : settings) {
-            addEntry(new Entry(setting, false));
-            if (categories.getOrDefault(setting, false)) {
-                for (String child : itemCategories.get(setting.split("_")[0])) {
-                    addEntry(new Entry(child, true));
+
+        if (hasSearchBar) {
+            for (String key : searchResults.keySet()) {
+                addEntry(new Entry(key, false));
+                if (categories.get(key)) {
+                    for (String child : searchResults.get(key)) {
+                        addEntry(new Entry(child, true));
+                    }
                 }
             }
+        } else {
+            for (String setting : settings) {
+                addEntry(new Entry(setting, false));
+            }
         }
+    }
+
+    public void search(String text) {
+        searchResults.clear();
+        for (String setting : settings) {
+            List<String> matches = itemCategories.get(setting.split("_")[0]).stream().filter(str -> Text.translatable(str).getString().toLowerCase().contains(text.toLowerCase())).toList();
+            if (!matches.isEmpty()) {
+                categories.put(setting, true);
+                searchResults.put(setting, matches);
+            }
+        }
+        updateEntries();
     }
 
     @Override
@@ -70,10 +97,18 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
         return width - 15;
     }
 
+    @Override
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.renderWidget(context, mouseX, mouseY, delta);
+        if (hasSearchBar) {
+            context.drawGuiTexture(searchIcon, width / 2 - width / 6 - 15, 31, 12, 12);
+        }
+    }
+
     public class Entry extends ElementListWidget.Entry<Entry> {
         private ButtonWidget button;
         private ButtonWidget resetButton;
-        public TextFieldWidget textField;
+        public CustomTextField textField;
         public String setting;
         private String displayText;
 
@@ -98,12 +133,12 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
                 this.resetButton = ButtonWidget.builder(Text.translatable("anti.antibreak.config.button_text.reset"), btn -> resetButton(this.textField, this.button, setting, btn, child))
                         .dimensions(width / 2 + width / 4 - 50 + 100 + 3, 0, textRenderer.getWidth(Text.translatable("anti.antibreak.config.button_text.reset")) + 7, 20)
                         .build();
-                // text
-                if (false) {
-                    this.textField = new TextFieldWidget(textRenderer, width / 2 + width / 4 - 50, 0, 100, 20, Text.of(setting));
+                if (setting.equals("min_durability")) {
+                    this.textField = new CustomTextField(textRenderer, width / 2 + width / 4 - 50, 0, 100, 20, Text.of(setting), PARENT);
                     this.textField.setText(editedConfigFile.get(setting).getAsString());
-                    this.textField.setChangedListener(newValue -> textChanged(setting, newValue, this.resetButton));
-                    textChanged(setting, this.textField.getText(), this.resetButton);
+                    this.textField.setMaxLength(4);
+                    this.textField.setChangedListener(newValue -> textChanged(this.textField, setting, newValue, this.resetButton));
+                    textChanged(textField, setting, this.textField.getText(), this.resetButton);
                 } else {
                     this.button = ButtonWidget.builder(Text.empty(), btn -> buttonHandler(btn, setting, this.resetButton, child))
                             .dimensions(width / 2 + width / 4 - 50, 0, 100, 20)
@@ -223,7 +258,17 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
         }
     }
 
-    private void textChanged(String setting, String newSvalue, ButtonWidget resetButton) {
-        resetButton.active = !newSvalue.equals(defaultConfig.get(setting).getAsString());
+    private void textChanged(CustomTextField textField, String setting, String newValue, ButtonWidget resetButton) {
+        resetButton.active = !newValue.equals(defaultConfig.get(setting).getAsString());
+
+        if (setting.equals("min_durability")) {
+            if (!newValue.matches("[1-9]\\d*")) {
+                textField.setError(true, Text.translatable("anti.antibreak.message.error_min_durability").getString());
+                return;
+            }
+        }
+
+        textField.setError(false, null);
+        editedConfigFile.addProperty(setting, newValue);
     }
 }

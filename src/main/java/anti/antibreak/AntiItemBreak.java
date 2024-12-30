@@ -50,14 +50,14 @@ public class AntiItemBreak implements ModInitializer {
 		AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> itemUsed(player, hand).getResult());
 		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> itemUsed(player, hand).getResult());
 
-		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {updateCategoryList();LOGGER.info("RUNNING");});
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> updateCategoryList());
 	}
 
 	private TypedActionResult<ItemStack> itemUsed(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 
 		if (configFile.get("enable_mod").getAsBoolean() && !bypassKeybind.isPressed()) {
-			if (itemStack.isDamageable() && (itemStack.getMaxDamage() - itemStack.getDamage() <= 1)) {
+			if (itemStack.isDamageable() && (itemStack.getMaxDamage() - itemStack.getDamage() <= configFile.get("min_durability").getAsInt())) {
 				JsonObject itemsObj = configFile.get("items").getAsJsonObject();
 				String translationKey = itemStack.getTranslationKey();
 				boolean bypass = false;
@@ -73,14 +73,13 @@ public class AntiItemBreak implements ModInitializer {
 				if (!bypass) {
 					String holdText;
 					if (bypassKeybind.isUnbound()) {
-						holdText = "(No bypass button set)";
+						holdText = Text.translatable("anti.antibreak.message.no_bypass_btn").getString();
 					} else {
-						holdText = "(Hold [" + bypassKeybind.getBoundKeyLocalizedText().getString() + "] to bypass)";
+						holdText = String.format(Text.translatable("anti.antibreak.message.hold_to_bypass").getString(), bypassKeybind.getBoundKeyLocalizedText().getString());
 					}
-					player.sendMessage(Text.literal("§cAnti Item Break activated! " + (itemStack.getMaxDamage() - itemStack.getDamage()) + " durability left. " + holdText), true);
+					player.sendMessage(Text.of(String.format(Text.translatable("anti.antibreak.message.blocked_usage").getString(), itemStack.getMaxDamage() - itemStack.getDamage(), holdText)), true);
 					return TypedActionResult.fail(itemStack);
 				}
-
 			}
 		}
 
@@ -146,9 +145,11 @@ public class AntiItemBreak implements ModInitializer {
 		for (Item item : Registries.ITEM) {
 			ItemStack itemStack = new ItemStack(item, 1);
 			if (itemStack.isDamageable()) {
-				String translationKey = item.getTranslationKey();
-				if (!alreadyAdded.contains(translationKey)) {
-					otherCategory.add(translationKey);
+				if (!(item instanceof ArmorItem) && !(item instanceof ElytraItem)) {
+					String translationKey = item.getTranslationKey();
+					if (!alreadyAdded.contains(translationKey)) {
+						otherCategory.add(translationKey);
+					}
 				}
 			}
 		}

@@ -1,16 +1,19 @@
 {
   "anti.antibreak.title": "Anti Item Break",
+  "anti.antibreak.discord": "Discord",
 
   "anti.antibreak.config.tabs.general": "General",
   "anti.antibreak.config.tabs.filters": "Filters",
 
   "anti.antibreak.config.option.enable_mod": "Enable Mod",
+  "anti.antibreak.config.option.min_durability": "Minimum Durability",
 
   "anti.antibreak.config.button_text.on": "§aOn",
   "anti.antibreak.config.button_text.off": "§cOff",
   "anti.antibreak.config.button_text.enchanted_only": "§eEnchanted Only",
   "anti.antibreak.config.button_text.reset": "Reset",
   "anti.antibreak.config.button_text.done": "Done",
+  "anti.antibreak.config.button_text.save_error": "Error: ",
 
   "anti.antibreak.config.filter.wooden_category": "Wooden Tools",
   "anti.antibreak.config.filter.stone_category": "Stone Tools",
@@ -20,5 +23,10 @@
   "anti.antibreak.config.filter.netherite_category": "Netherite Tools",
   "anti.antibreak.config.filter.other_category": "Other",
 
-  "anti.antibreak.keybind.bypass_key": "Bypass Key"
+  "anti.antibreak.keybind.bypass_key": "Bypass Key",
+
+  "anti.antibreak.message.blocked_usage": "§cAnti Item Break activated! %s durability left. %s",
+  "anti.antibreak.message.hold_to_bypass": "(Hold [%s] to bypass)",
+  "anti.antibreak.message.no_bypass_btn": "(No bypass button set)",
+  "anti.antibreak.message.error_min_durability": "Minimum Durability"
 }

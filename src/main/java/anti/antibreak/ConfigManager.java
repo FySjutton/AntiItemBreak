@@ -62,6 +62,7 @@ public class ConfigManager {
             JsonObject obj = elm.getAsJsonObject();
             obj.get("enable_mod").getAsBoolean();
             obj.get("items").getAsJsonObject();
+            obj.get("min_durability").getAsInt();
 
             configFile = obj;
         } catch (Exception e) {
@@ -86,7 +87,6 @@ public class ConfigManager {
     }
 
     public boolean saveConfigFile(JsonElement newConfigFile) {
-        LOGGER.info("SAVING");
         Path configDir = FabricLoader.getInstance().getConfigDir();
         try {
             File elmFile = new File(configDir + "/antiitembreak.json");

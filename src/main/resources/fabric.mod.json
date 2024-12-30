@@ -11,7 +11,7 @@
 		"issues": "https://discord.gg/6gBT2CgqQj",
 		"sources": "https://github.com/FySjutton/AntiItemBreak"
 	},
-	"license": "CC0-1.0",
+	"license": "Fy's Projects License",
 	"icon": "assets/antibreak/icon.png",
 	"environment": "client",
 	"entrypoints": {
@@ -37,7 +37,7 @@
 	"custom": {
 		"modmenu": {
 			"links": {
-				"antibreak.discord": "https://discord.gg/V2BXH2q6Rq"
+				"anti.antibreak.discord": "https://discord.gg/V2BXH2q6Rq"
 			},
 			"update_checker": true
 		}
