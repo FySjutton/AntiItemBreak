@@ -3,17 +3,17 @@
 	"id": "antibreak",
 	"version": "${version}",
 	"name": "Anti Item Break",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Prevents accidental item destruction by disabling the item once it reaches 1 durability.",
 	"authors": [
 		"Fy17"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"issues": "https://discord.gg/6gBT2CgqQj",
+		"sources": "https://github.com/FySjutton/AntiItemBreak"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/antibreak/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
 		"main": [
 			"anti.antibreak.AntiItemBreak"
@@ -26,12 +26,20 @@
 		"antibreak.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.16.9",
+		"fabricloader": ">=0.16.5",
 		"minecraft": "~1.21",
 		"java": ">=21",
 		"fabric-api": "*"
 	},
 	"recommends": {
 		"modmenu": ">=11.0.0"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"antibreak.discord": "https://discord.gg/V2BXH2q6Rq"
+			},
+			"update_checker": true
+		}
 	}
 }

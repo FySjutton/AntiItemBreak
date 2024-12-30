@@ -31,13 +31,14 @@ public class ConfigScreen extends Screen {
 
     @Override
     public void init() {
-        Tab[] tabs = new Tab[1];
+        Tab[] tabs = new Tab[2];
         tabs[0] = new newTab(Text.translatable("anti.antibreak.config.tabs.general").getString(), new ArrayList<>(List.of("enable_mod")));
+        tabs[1] = new newTab(Text.translatable("anti.antibreak.config.tabs.filters").getString(), new ArrayList<>(List.of("wooden_category", "stone_category", "iron_category", "gold_category", "diamond_category", "netherite_category", "other_category")));
 
         TabNavigationWidget tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width).tabs(tabs).build();
         this.addDrawableChild(tabNavigation);
 
-        ButtonWidget saveButton = ButtonWidget.builder(Text.translatable("DONE!!!"), btn -> saveFile()).dimensions(width / 4, height - 25, width / 2, 20).build();
+        ButtonWidget saveButton = ButtonWidget.builder(Text.translatable("anti.antibreak.config.button_text.done"), btn -> saveFile()).dimensions(width / 4, height - 25, width / 2, 20).build();
         this.addDrawableChild(saveButton);
 
         tabNavigation.selectTab(0, false);

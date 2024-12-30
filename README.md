@@ -1,0 +1,1 @@
+A Fabric mod that prevents accidental item destruction by disabling the item once it reaches 1 durability.

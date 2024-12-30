@@ -2,10 +2,23 @@
   "anti.antibreak.title": "Anti Item Break",
 
   "anti.antibreak.config.tabs.general": "General",
+  "anti.antibreak.config.tabs.filters": "Filters",
 
   "anti.antibreak.config.option.enable_mod": "Enable Mod",
 
+  "anti.antibreak.config.button_text.on": "§aOn",
+  "anti.antibreak.config.button_text.off": "§cOff",
+  "anti.antibreak.config.button_text.enchanted_only": "§eEnchanted Only",
   "anti.antibreak.config.button_text.reset": "Reset",
-  "anti.antibreak.config.button_text.on": "On",
-  "anti.antibreak.config.button_text.off": "Off"
+  "anti.antibreak.config.button_text.done": "Done",
+
+  "anti.antibreak.config.filter.wooden_category": "Wooden Tools",
+  "anti.antibreak.config.filter.stone_category": "Stone Tools",
+  "anti.antibreak.config.filter.iron_category": "Iron Tools",
+  "anti.antibreak.config.filter.gold_category": "Gold Tools",
+  "anti.antibreak.config.filter.diamond_category": "Diamond Tools",
+  "anti.antibreak.config.filter.netherite_category": "Netherite Tools",
+  "anti.antibreak.config.filter.other_category": "Other",
+
+  "anti.antibreak.keybind.bypass_key": "Bypass Key"
 }

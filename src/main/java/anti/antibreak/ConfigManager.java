@@ -58,6 +58,7 @@ public class ConfigManager {
                 // VALIDATE THE "elm"
                 JsonObject obj = elm.getAsJsonObject();
                 obj.get("enable_mod").getAsBoolean();
+                obj.get("items").getAsJsonObject();
 
             } catch (Exception e) {
                 LOGGER.error("Anti Item Break: The configuration file does not appear to follow the required format. This might be caused by a missing key or similar. For help, join our discord server. You can try to delete the configuration file and than restart your game.");

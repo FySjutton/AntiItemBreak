@@ -1,23 +1,45 @@
 package anti.antibreak;
 
+import com.google.gson.JsonObject;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static anti.antibreak.ConfigManager.configFile;
 
 public class AntiItemBreak implements ModInitializer {
 	public static final String MOD_ID = "antibreak";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+	public static final KeyBinding bypassKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+			Text.translatable("anti.antibreak.keybind.bypass_key").getString(),
+			InputUtil.Type.KEYSYM,
+			GLFW.GLFW_KEY_LEFT_ALT,
+			Text.translatable("anti.antibreak.title").getString()
+	));
+
+	public static final HashMap<String, ArrayList<String>> itemCategories = new HashMap<>(); // category: list<items: minecraft:stone>
 
 	@Override
 	public void onInitialize() {
@@ -27,17 +49,110 @@ public class AntiItemBreak implements ModInitializer {
 		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> itemUsed(player, hand).getResult());
 		AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> itemUsed(player, hand).getResult());
 		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> itemUsed(player, hand).getResult());
+
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {updateCategoryList();LOGGER.info("RUNNING");});
 	}
 
 	private TypedActionResult<ItemStack> itemUsed(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 
-		if (configFile.get("enable_mod").getAsBoolean()) {
+		if (configFile.get("enable_mod").getAsBoolean() && !bypassKeybind.isPressed()) {
 			if (itemStack.isDamageable() && (itemStack.getMaxDamage() - itemStack.getDamage() <= 1)) {
-				return TypedActionResult.fail(itemStack);
+				JsonObject itemsObj = configFile.get("items").getAsJsonObject();
+				String translationKey = itemStack.getTranslationKey();
+				boolean bypass = false;
+
+				if (itemsObj.has(translationKey)) {
+					int value = itemsObj.get(translationKey).getAsInt();
+					if (value == 0 && !itemStack.hasEnchantments()) {
+						bypass = true;
+					} else if (value != 0) {
+						bypass = true;
+					}
+				}
+				if (!bypass) {
+					String holdText;
+					if (bypassKeybind.isUnbound()) {
+						holdText = "(No bypass button set)";
+					} else {
+						holdText = "(Hold [" + bypassKeybind.getBoundKeyLocalizedText().getString() + "] to bypass)";
+					}
+					player.sendMessage(Text.literal("§cAnti Item Break activated! " + (itemStack.getMaxDamage() - itemStack.getDamage()) + " durability left. " + holdText), true);
+					return TypedActionResult.fail(itemStack);
+				}
+
 			}
 		}
 
 		return TypedActionResult.pass(itemStack);
+	}
+
+	private void updateCategoryList() {
+		itemCategories.clear();
+		itemCategories.put("wooden", new ArrayList<>(List.of(
+				Items.WOODEN_AXE.getTranslationKey(),
+				Items.WOODEN_HOE.getTranslationKey(),
+				Items.WOODEN_PICKAXE.getTranslationKey(),
+				Items.WOODEN_SHOVEL.getTranslationKey(),
+				Items.WOODEN_SWORD.getTranslationKey()
+		)));
+
+		itemCategories.put("stone", new ArrayList<>(List.of(
+				Items.STONE_AXE.getTranslationKey(),
+				Items.STONE_HOE.getTranslationKey(),
+				Items.STONE_PICKAXE.getTranslationKey(),
+				Items.STONE_SHOVEL.getTranslationKey(),
+				Items.STONE_SWORD.getTranslationKey()
+		)));
+
+		itemCategories.put("iron", new ArrayList<>(List.of(
+				Items.IRON_AXE.getTranslationKey(),
+				Items.IRON_HOE.getTranslationKey(),
+				Items.IRON_PICKAXE.getTranslationKey(),
+				Items.IRON_SHOVEL.getTranslationKey(),
+				Items.IRON_SWORD.getTranslationKey()
+		)));
+
+		itemCategories.put("gold", new ArrayList<>(List.of(
+				Items.GOLDEN_AXE.getTranslationKey(),
+				Items.GOLDEN_HOE.getTranslationKey(),
+				Items.GOLDEN_PICKAXE.getTranslationKey(),
+				Items.GOLDEN_SHOVEL.getTranslationKey(),
+				Items.GOLDEN_SWORD.getTranslationKey()
+		)));
+
+		itemCategories.put("diamond", new ArrayList<>(List.of(
+				Items.DIAMOND_AXE.getTranslationKey(),
+				Items.DIAMOND_HOE.getTranslationKey(),
+				Items.DIAMOND_PICKAXE.getTranslationKey(),
+				Items.DIAMOND_SHOVEL.getTranslationKey(),
+				Items.DIAMOND_SWORD.getTranslationKey()
+		)));
+
+		itemCategories.put("netherite", new ArrayList<>(List.of(
+				Items.NETHERITE_AXE.getTranslationKey(),
+				Items.NETHERITE_HOE.getTranslationKey(),
+				Items.NETHERITE_PICKAXE.getTranslationKey(),
+				Items.NETHERITE_SHOVEL.getTranslationKey(),
+				Items.NETHERITE_SWORD.getTranslationKey()
+		)));
+
+		List<String> alreadyAdded = itemCategories.values().stream()
+				.flatMap(List::stream)
+				.toList();
+
+		ArrayList<String> otherCategory = new ArrayList<>();
+
+		for (Item item : Registries.ITEM) {
+			ItemStack itemStack = new ItemStack(item, 1);
+			if (itemStack.isDamageable()) {
+				String translationKey = item.getTranslationKey();
+				if (!alreadyAdded.contains(translationKey)) {
+					otherCategory.add(translationKey);
+				}
+			}
+		}
+
+		itemCategories.put("other", otherCategory);
 	}
 }
