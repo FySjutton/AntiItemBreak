@@ -20,58 +20,68 @@ public class ConfigManager {
 
     public void checkConfig() {
         Path configDir = FabricLoader.getInstance().getConfigDir();
-
-        if (Files.notExists(configDir.resolve("betterTab.json"))) {
+        if (Files.notExists(configDir.resolve("antiitembreak.json"))) {
             LOGGER.warn("Anti Item Break: Configuration file not found - generating new config file.");
-            try {
-                InputStream resource = ConfigManager.class.getResourceAsStream("/assets/antibreak/default_config/antiitembreak.json");
-                FileUtils.copyInputStreamToFile(resource, new File(configDir + "/antiitembreak.json"));
-            } catch (Exception e) {
-                LOGGER.error("Anti Item Break: Could not generate a new antiitembreak.json file (config), the program will now close. This error should not normally occur, and if you need help, please join our discord server. This error indicates that there's something wrong with the jar file, or the program doesn't have access to write files.");
-                LOGGER.error("Shutting down minecraft..."); // Should just inactivate mod instead?
-                e.printStackTrace();
-                MinecraftClient.getInstance().stop();
-            }
+            generateConfigFile();
         }
-        generateConfigArray();
+        generateConfigArray(false);
     }
 
-    private void generateConfigArray() {
-        InputStream resource = ConfigManager.class.getResourceAsStream("/assets/antibreak/default_config/antiitembreak.json");
-        Reader reader = new InputStreamReader(resource);
-        defaultConfig = JsonParser.parseReader(reader).getAsJsonObject();
+    private void generateConfigFile() {
         try {
-            reader.close();
-        } catch (IOException e) {
-            LOGGER.error("Anti Item Break: Failed to close reader?");
+            Path configDir = FabricLoader.getInstance().getConfigDir();
+            InputStream resource = ConfigManager.class.getResourceAsStream("/assets/antibreak/default_config/antiitembreak.json");
+            FileUtils.copyInputStreamToFile(resource, new File(configDir + "/antiitembreak.json"));
+        } catch (Exception e) {
+            LOGGER.error("Anti Item Break: Could not generate a new antiitembreak.json file (config), the program will now close. This error should not normally occur, and if you need help, please join our discord server. This error indicates that there's something wrong with the jar file, or the program doesn't have access to write files.");
+            LOGGER.error("Shutting down minecraft..."); // Should just inactivate mod instead?
             e.printStackTrace();
+            MinecraftClient.getInstance().stop();
         }
+    }
+
+    private void generateConfigArray(boolean reCall) {
         Path configDir = FabricLoader.getInstance().getConfigDir();
+        boolean error = false;
+        String errorMessage = "";
 
         try {
+            // Load default config
+            InputStream resource = ConfigManager.class.getResourceAsStream("/assets/antibreak/default_config/antiitembreak.json");
+            Reader reader = new InputStreamReader(resource);
+            defaultConfig = JsonParser.parseReader(reader).getAsJsonObject();
+            reader.close();
+
+            // Load configuration file
             File config = new File(configDir + "/antiitembreak.json");
             FileReader fileReader = new FileReader(config);
             JsonElement elm = JsonParser.parseReader(fileReader);
             fileReader.close();
 
-            try {
-                // VALIDATE THE "elm"
-                JsonObject obj = elm.getAsJsonObject();
-                obj.get("enable_mod").getAsBoolean();
-                obj.get("items").getAsJsonObject();
+            // Validate the configuration file
+            JsonObject obj = elm.getAsJsonObject();
+            obj.get("enable_mod").getAsBoolean();
+            obj.get("items").getAsJsonObject();
 
-            } catch (Exception e) {
-                LOGGER.error("Anti Item Break: The configuration file does not appear to follow the required format. This might be caused by a missing key or similar. For help, join our discord server. You can try to delete the configuration file and than restart your game.");
-                LOGGER.error("The error above is critical, and the game will automatically close now.");
-                e.printStackTrace();
-                MinecraftClient.getInstance().stop();
-            }
-
-            configFile = elm.getAsJsonObject();
+            configFile = obj;
         } catch (Exception e) {
-            LOGGER.error("Anti Item Break: Could not load configuration file, this is most likely because of the file not following proper json syntax, like a missing comma or similar. For help, please seek help in Fy's Development discord server.");
-            LOGGER.error(e.getMessage());
-            MinecraftClient.getInstance().stop();
+            error = true;
+            errorMessage = e.getMessage();
+        }
+
+        if (error) {
+            if (reCall) {
+                MinecraftClient.getInstance().stop();
+                LOGGER.error("Anti Item Break: An unknown error occurred while trying to generate a new config. Failed multiple times.");
+                if (!errorMessage.isEmpty()) {
+                    LOGGER.error(errorMessage);
+                }
+                MinecraftClient.getInstance().stop();
+            } else {
+                generateConfigFile();
+                generateConfigArray(true); // re-call this function
+                LOGGER.warn("Anti Item Break: Corrupted configuration file detected, now regenerating a new one. Any previous options will be reset.");
+            }
         }
     }
 
