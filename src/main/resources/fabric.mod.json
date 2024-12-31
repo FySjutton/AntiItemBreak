@@ -12,7 +12,7 @@
 		"sources": "https://github.com/FySjutton/AntiItemBreak"
 	},
 	"license": "Fy's Projects License",
-	"icon": "assets/antibreak/icon.png",
+	"icon": "assets/antibreak/mod_icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
