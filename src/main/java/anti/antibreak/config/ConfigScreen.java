@@ -8,17 +8,17 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tab.GridScreenTab;
 import net.minecraft.client.gui.tab.Tab;
 import net.minecraft.client.gui.tab.TabManager;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.GridWidget;
-import net.minecraft.client.gui.widget.TabButtonWidget;
-import net.minecraft.client.gui.widget.TabNavigationWidget;
+import net.minecraft.client.gui.widget.*;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
+import javax.swing.text.AttributeSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static anti.antibreak.ConfigManager.configFile;
 import static anti.antibreak.AntiItemBreak.LOGGER;
@@ -29,6 +29,7 @@ public class ConfigScreen extends Screen {
     private final JsonObject editedConfigFile = new JsonObject();
     private final Screen PARENT;
     private ButtonWidget saveButton;
+    private TabNavigationWidget navigationWidget;
 
     private final Identifier discordTexture = Identifier.of("antibreak", "textures/gui/discord_logo.png");
 
@@ -48,7 +49,8 @@ public class ConfigScreen extends Screen {
         tabs[1] = new newTab(this, Text.translatable("anti.antibreak.config.tabs.filters").getString(), new ArrayList<>(List.of("wooden_category", "stone_category", "iron_category", "gold_category", "diamond_category", "netherite_category", "other_category")), true);
 
         TabNavigationWidget tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width).tabs(tabs).build();
-        this.addDrawableChild(tabNavigation);
+        this.addSelectableChild(tabNavigation);
+        navigationWidget = tabNavigation;
 
         tabNavigation.selectTab(0, false);
         tabNavigation.init();
@@ -59,7 +61,9 @@ public class ConfigScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackgroundTexture(context);
         super.render(context, mouseX, mouseY, delta);
+        navigationWidget.render(context, mouseX, mouseY, delta);
         context.drawTexture(discordTexture, width - 21, height - 21, 0, 0, 12, 12, 12, 12);
     }
 
@@ -86,8 +90,8 @@ public class ConfigScreen extends Screen {
                 adder.add(searchField);
             }
 
-            settingWidget = new SettingWidget(width, height, settings, editedConfigFile, parent, searchBar);
-            adder.add(settingWidget);
+            settingWidget = new SettingWidget(width, height, settings, editedConfigFile, parent, searchField);
+            adder.add(new SettingWidgetWrapper(settingWidget));
         }
     }
 
@@ -109,7 +113,7 @@ public class ConfigScreen extends Screen {
     public void updateDoneButton() {
         saveButton.active = errors.isEmpty();
         if (!errors.isEmpty()) {
-            saveButton.setMessage(Text.translatable("anti.antibreak.config.button_text.save_error").append(Text.literal(errors.values().toArray()[0].toString())).withColor(0xFF4F4F));
+            saveButton.setMessage(Text.translatable("anti.antibreak.config.button_text.save_error").append(Text.literal(errors.values().toArray()[0].toString())));
         } else {
             saveButton.setMessage(Text.translatable("anti.antibreak.config.button_text.done"));
         }

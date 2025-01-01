@@ -4,11 +4,10 @@ import com.google.gson.JsonObject;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static anti.antibreak.AntiItemBreak.itemCategories;
 import static anti.antibreak.ConfigManager.configFile;
@@ -26,19 +26,28 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     private final JsonObject editedConfigFile;
     private final ArrayList<String> settings;
     private final JsonObject itemObject;
-    private final boolean hasSearchBar;
+    private final SearchField searchField;
 
     private final HashMap<String, Boolean> categories = new HashMap<>();
     private final LinkedHashMap<String, List<String>> searchResults = new LinkedHashMap<>();
 
-    private final Identifier searchIcon = Identifier.ofVanilla("icon/search");
+    public int width;
+    public int height;
 
-    public SettingWidget(int width, int height, ArrayList<String> settings, JsonObject eCF, ConfigScreen parent, boolean hasSearchBar) {
-        super(MinecraftClient.getInstance(), width, height - 24 - 32 + (hasSearchBar ? -25 : 0), 24 + (hasSearchBar ? 25 : 0), 25);
+    private final Identifier searchIcon = new Identifier("textures/gui/social_interactions.png");
+
+
+//    Identifier.of("minecraft", "icon/search");
+
+    public SettingWidget(int width, int height, ArrayList<String> settings, JsonObject eCF, ConfigScreen parent, SearchField searchField) {
+        super(MinecraftClient.getInstance(), width, height - 24 - 32 + (searchField != null ? -25 : 0), 24 + (searchField != null ? 25 : 0), height - 35, 25);
+
+        this.width = width;
+        this.height = height;
 
         this.settings = settings;
         this.PARENT = parent;
-        this.hasSearchBar = hasSearchBar;
+        this.searchField = searchField;
 
         editedConfigFile = eCF;
         for (String key : configFile.keySet()) {
@@ -48,7 +57,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
 
         for (String setting : settings) {
             categories.put(setting, false);
-            if (hasSearchBar) {
+            if (searchField != null) {
                 searchResults.put(setting, itemCategories.get(setting.split("_")[0]));
             }
         }
@@ -59,7 +68,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     private void updateEntries() {
         clearEntries();
 
-        if (hasSearchBar) {
+        if (searchField != null) {
             for (String key : searchResults.keySet()) {
                 addEntry(new Entry(key, false));
                 if (categories.get(key)) {
@@ -73,6 +82,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
                 addEntry(new Entry(setting, false));
             }
         }
+
     }
 
     public void search(String text) {
@@ -88,7 +98,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     }
 
     @Override
-    protected int getScrollbarX() {
+    protected int getScrollbarPositionX() {
         return width - 15;
     }
 
@@ -98,10 +108,11 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.renderWidget(context, mouseX, mouseY, delta);
-        if (hasSearchBar) {
-            context.drawGuiTexture(searchIcon, width / 2 - width / 6 - 15, 31, 12, 12);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+        if (searchField != null) {
+            searchField.render(context, mouseX, mouseY, delta);
+            context.drawTexture(searchIcon, width / 2 - width / 6 - 18, 31, 243, 1, 12, 12);
         }
     }
 
@@ -134,7 +145,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
                         .dimensions(width / 2 + width / 4 - 50 + 100 + 3, 0, textRenderer.getWidth(Text.translatable("anti.antibreak.config.button_text.reset")) + 7, 20)
                         .build();
                 if (setting.equals("min_durability")) {
-                    this.textField = new CustomTextField(textRenderer, width / 2 + width / 4 - 50, 0, 100, 20, Text.of(setting), PARENT);
+                    this.textField = new CustomTextField(textRenderer, width / 2 + width / 4 - 49, 0, 98, 20, Text.of(setting), PARENT);
                     this.textField.setText(editedConfigFile.get(setting).getAsString());
                     this.textField.setMaxLength(4);
                     this.textField.setChangedListener(newValue -> textChanged(this.textField, setting, newValue, this.resetButton));
@@ -194,7 +205,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             }
 
             if (displayText != null) {
-                context.drawCenteredTextWithShadow(textRenderer, displayText, width / 4, y + entryHeight / 2, 0xFFFFFF);
+                context.drawCenteredTextWithShadow(textRenderer, displayText, width / 4, y + entryHeight / 2 - textRenderer.fontHeight / 2, 0xFFFFFF);
             }
         }
     }
