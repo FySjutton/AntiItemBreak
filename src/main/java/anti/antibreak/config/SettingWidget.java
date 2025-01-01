@@ -134,7 +134,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
                         .dimensions(width / 2 + width / 4 - 50 + 100 + 3, 0, textRenderer.getWidth(Text.translatable("anti.antibreak.config.button_text.reset")) + 7, 20)
                         .build();
                 if (setting.equals("min_durability")) {
-                    this.textField = new CustomTextField(textRenderer, width / 2 + width / 4 - 50, 0, 100, 20, Text.of(setting), PARENT);
+                    this.textField = new CustomTextField(textRenderer, width / 2 + width / 4 - 49, 0, 98, 20, Text.of(setting), PARENT);
                     this.textField.setText(editedConfigFile.get(setting).getAsString());
                     this.textField.setMaxLength(4);
                     this.textField.setChangedListener(newValue -> textChanged(this.textField, setting, newValue, this.resetButton));
@@ -194,7 +194,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             }
 
             if (displayText != null) {
-                context.drawCenteredTextWithShadow(textRenderer, displayText, width / 4, y + entryHeight / 2, 0xFFFFFF);
+                context.drawCenteredTextWithShadow(textRenderer, displayText, width / 4, y + entryHeight / 2 - textRenderer.fontHeight / 2, 0xFFFFFF);
             }
         }
     }
