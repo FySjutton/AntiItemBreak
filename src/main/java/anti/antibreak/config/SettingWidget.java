@@ -34,10 +34,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     public int width;
     public int height;
 
-    private final Identifier searchIcon = new Identifier("textures/gui/social_interactions.png");
-
-
-//    Identifier.of("minecraft", "icon/search");
+    private final Identifier searchIcon = new Identifier("icon/search");
 
     public SettingWidget(int width, int height, ArrayList<String> settings, JsonObject eCF, ConfigScreen parent, SearchField searchField) {
         super(MinecraftClient.getInstance(), width, height - 24 - 32 + (searchField != null ? -25 : 0), 24 + (searchField != null ? 25 : 0), height - 35, 25);
@@ -112,7 +109,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
         super.render(context, mouseX, mouseY, delta);
         if (searchField != null) {
             searchField.render(context, mouseX, mouseY, delta);
-            context.drawTexture(searchIcon, width / 2 - width / 6 - 18, 31, 243, 1, 12, 12);
+            context.drawGuiTexture(searchIcon, width / 2 - width / 6 - 15, 31, 12, 12);
         }
     }
 
