@@ -9,6 +9,7 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -101,7 +102,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         super.renderWidget(context, mouseX, mouseY, delta);
         if (hasSearchBar) {
-            context.drawGuiTexture(searchIcon, width / 2 - width / 6 - 15, 31, 12, 12);
+            context.drawGuiTexture(RenderLayer::getGuiTextured, searchIcon, width / 2 - width / 6 - 15, 31, 12, 12);
         }
     }
 

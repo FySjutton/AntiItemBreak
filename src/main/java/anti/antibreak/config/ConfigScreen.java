@@ -12,6 +12,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.TabButtonWidget;
 import net.minecraft.client.gui.widget.TabNavigationWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -60,7 +61,7 @@ public class ConfigScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        context.drawTexture(discordTexture, width - 21, height - 21, 0, 0, 12, 12, 12, 12);
+        context.drawTexture(RenderLayer::getGuiTextured, discordTexture, width - 21, height - 21, 0, 0, 12, 12, 12, 12);
     }
 
     @Override

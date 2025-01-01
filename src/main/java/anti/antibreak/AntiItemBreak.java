@@ -11,12 +11,14 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.ComponentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static anti.antibreak.ConfigManager.configFile;
 
@@ -46,20 +47,20 @@ public class AntiItemBreak implements ModInitializer {
 		new ConfigManager().checkConfig();
 
 		UseItemCallback.EVENT.register((player, world, hand) -> itemUsed(player, hand));
-		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> itemUsed(player, hand).getResult());
-		AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> itemUsed(player, hand).getResult());
-		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> itemUsed(player, hand).getResult());
+		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> itemUsed(player, hand));
+		AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> itemUsed(player, hand));
+		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> itemUsed(player, hand));
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> updateCategoryList());
 	}
 
-	private TypedActionResult<ItemStack> itemUsed(PlayerEntity player, Hand hand) {
+	private ActionResult itemUsed(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 
 		if (configFile.get("enable_mod").getAsBoolean() && !bypassKeybind.isPressed()) {
 			if (itemStack.isDamageable() && (itemStack.getMaxDamage() - itemStack.getDamage() <= configFile.get("min_durability").getAsInt())) {
 				JsonObject itemsObj = configFile.get("items").getAsJsonObject();
-				String translationKey = itemStack.getTranslationKey();
+				String translationKey = itemStack.getItem().getTranslationKey();
 				boolean bypass = false;
 
 				if (itemsObj.has(translationKey)) {
@@ -78,12 +79,12 @@ public class AntiItemBreak implements ModInitializer {
 						holdText = String.format(Text.translatable("anti.antibreak.message.hold_to_bypass").getString(), bypassKeybind.getBoundKeyLocalizedText().getString());
 					}
 					player.sendMessage(Text.of(String.format(Text.translatable("anti.antibreak.message.blocked_usage").getString(), itemStack.getMaxDamage() - itemStack.getDamage(), holdText)), true);
-					return TypedActionResult.fail(itemStack);
+					return ActionResult.FAIL;
 				}
 			}
 		}
 
-		return TypedActionResult.pass(itemStack);
+		return ActionResult.PASS;
 	}
 
 	private void updateCategoryList() {
@@ -145,7 +146,8 @@ public class AntiItemBreak implements ModInitializer {
 		for (Item item : Registries.ITEM) {
 			ItemStack itemStack = new ItemStack(item, 1);
 			if (itemStack.isDamageable()) {
-				if (!(item instanceof ArmorItem) && !(item instanceof ElytraItem)) {
+				if (!(item instanceof ArmorItem) && !(item instanceof AnimalArmorItem)
+				&& !(item.getTranslationKey().equals("item.minecraft.elytra"))) { // Elytra no longer has its own subclass :(
 					String translationKey = item.getTranslationKey();
 					if (!alreadyAdded.contains(translationKey)) {
 						otherCategory.add(translationKey);
