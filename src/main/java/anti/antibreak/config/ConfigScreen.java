@@ -59,9 +59,13 @@ public class ConfigScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackgroundTexture(context);
         super.render(context, mouseX, mouseY, delta);
         context.drawTexture(discordTexture, width - 21, height - 21, 0, 0, 12, 12, 12, 12);
     }
+
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {}
 
     @Override
     public boolean shouldCloseOnEsc() {
