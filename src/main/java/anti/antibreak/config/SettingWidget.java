@@ -31,7 +31,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     private final HashMap<String, Boolean> categories = new HashMap<>();
     private final LinkedHashMap<String, List<String>> searchResults = new LinkedHashMap<>();
 
-    private final Identifier searchIcon = Identifier.ofVanilla("icon/search");
+    private final Identifier searchIcon = new Identifier("icon/search");
 
     public SettingWidget(int width, int height, ArrayList<String> settings, JsonObject eCF, ConfigScreen parent, boolean hasSearchBar) {
         super(MinecraftClient.getInstance(), width, height - 24 - 32 + (hasSearchBar ? -25 : 0), 24 + (hasSearchBar ? 25 : 0), 25);
