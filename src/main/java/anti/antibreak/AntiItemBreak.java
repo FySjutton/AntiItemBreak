@@ -10,11 +10,14 @@ import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.item.model.ItemModelTypes;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.item.equipment.ArmorMaterial;
+import net.minecraft.item.equipment.ArmorMaterials;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -146,12 +149,9 @@ public class AntiItemBreak implements ModInitializer {
 		for (Item item : Registries.ITEM) {
 			ItemStack itemStack = new ItemStack(item, 1);
 			if (itemStack.isDamageable()) {
-				if (!(item instanceof ArmorItem) && !(item instanceof AnimalArmorItem)
-				&& !(item.getTranslationKey().equals("item.minecraft.elytra"))) { // Elytra no longer has its own subclass :(
-					String translationKey = item.getTranslationKey();
-					if (!alreadyAdded.contains(translationKey)) {
-						otherCategory.add(translationKey);
-					}
+				String translationKey = item.getTranslationKey();
+				if (!alreadyAdded.contains(translationKey)) {
+					otherCategory.add(translationKey);
 				}
 			}
 		}
