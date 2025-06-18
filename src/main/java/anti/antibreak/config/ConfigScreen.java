@@ -2,6 +2,7 @@ package anti.antibreak.config;
 
 import anti.antibreak.ConfigManager;
 import com.google.gson.JsonObject;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -61,7 +62,7 @@ public class ConfigScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        context.drawTexture(RenderLayer::getGuiTextured, discordTexture, width - 21, height - 21, 0, 0, 12, 12, 12, 12);
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, discordTexture, width - 21, height - 21, 0, 0, 12, 12, 12, 12);
     }
 
     @Override
@@ -110,7 +111,7 @@ public class ConfigScreen extends Screen {
     public void updateDoneButton() {
         saveButton.active = errors.isEmpty();
         if (!errors.isEmpty()) {
-            saveButton.setMessage(Text.translatable("anti.antibreak.config.button_text.save_error").append(Text.literal(errors.values().toArray()[0].toString())).withColor(0xFF4F4F));
+            saveButton.setMessage(Text.translatable("anti.antibreak.config.button_text.save_error").append(Text.literal(errors.values().toArray()[0].toString())).withColor(0xFFFF4F4F));
         } else {
             saveButton.setMessage(Text.translatable("anti.antibreak.config.button_text.done"));
         }

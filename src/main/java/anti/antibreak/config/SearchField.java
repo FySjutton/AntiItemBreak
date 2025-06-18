@@ -10,7 +10,7 @@ import java.util.TimerTask;
 public class SearchField extends TextFieldWidget {
     private Timer timer;
     private static final long DELAY = 800;
-    private final String lastText = "";
+    private String lastText = "";
 
     public SearchField(ConfigScreen.newTab tab, TextRenderer textRenderer, int width) {
         super(textRenderer, width / 2 - width / 6, 29, width / 3, 15, Text.of("Search Bar"));
@@ -28,6 +28,7 @@ public class SearchField extends TextFieldWidget {
                     }
                 }, DELAY);
             }
+            lastText = text;
         });
     }
 }

@@ -3,6 +3,7 @@ package anti.antibreak.config;
 import com.google.gson.JsonObject;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -79,10 +80,16 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     public void search(String text) {
         searchResults.clear();
         for (String setting : settings) {
-            List<String> matches = itemCategories.get(setting.split("_")[0]).stream().filter(str -> Text.translatable(str).getString().toLowerCase().contains(text.toLowerCase())).toList();
-            if (!matches.isEmpty()) {
+            List<String> matches = itemCategories.get(setting.split("_")[0]);
+            if (text.isEmpty()) {
                 categories.put(setting, true);
                 searchResults.put(setting, matches);
+            } else {
+                matches = matches.stream().filter(str -> Text.translatable(str).getString().toLowerCase().contains(text.toLowerCase())).toList();
+                if (!matches.isEmpty()) {
+                    categories.put(setting, true);
+                    searchResults.put(setting, matches);
+                }
             }
         }
         updateEntries();
@@ -102,7 +109,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         super.renderWidget(context, mouseX, mouseY, delta);
         if (hasSearchBar) {
-            context.drawGuiTexture(RenderLayer::getGuiTextured, searchIcon, width / 2 - width / 6 - 15, 31, 12, 12);
+            context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, searchIcon, width / 2 - width / 6 - 15, 31, 12, 12);
         }
     }
 
@@ -195,7 +202,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             }
 
             if (displayText != null) {
-                context.drawCenteredTextWithShadow(textRenderer, displayText, width / 4, y + entryHeight / 2 - textRenderer.fontHeight / 2, 0xFFFFFF);
+                context.drawCenteredTextWithShadow(textRenderer, displayText, width / 4, y + entryHeight / 2 - textRenderer.fontHeight / 2, 0xFFFFFFFF);
             }
         }
     }
