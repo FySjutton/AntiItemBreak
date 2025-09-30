@@ -1,0 +1,25 @@
+{
+  "avox.antiitembreak.title": "Anti Item Break",
+  "avox.antiitembreak.discord": "Discord",
+
+  "avox.antiitembreak.config.tabs.general": "General",
+  "avox.antiitembreak.config.tabs.filters": "Filters",
+
+  "avox.antiitembreak.config.enable_mod": "Enable Mod",
+  "avox.antiitembreak.config.min_durability": "Minimum Durability",
+
+  "avox.antiitembreak.config.enable_mod.desc": "Enable and disable the mod",
+  "avox.antiitembreak.config.min_durability.desc": "At which durability the item will stop working",
+
+  "avox.antiitembreak.keybind.bypass_key": "Bypass Key",
+
+  "avox.antiitembreak.message.blocked_usage": "Blocked! %s durability left - %s",
+  "avox.antiitembreak.message.hold_to_bypass": "(Hold [%s] to bypass)",
+  "avox.antiitembreak.message.no_bypass_btn": "(No bypass button set)",
+  "avox.antiitembreak.message.unknown_category": "Unknown Category",
+  "avox.antiitembreak.message.requirement_text": "Mod requirement for %s",
+
+  "avox.antiitembreak.type.always": "Always",
+  "avox.antiitembreak.type.enchanted_only": "Enchanted Only",
+  "avox.antiitembreak.type.never": "Never"
+}

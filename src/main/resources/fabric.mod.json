@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "antibreak",
+	"id": "antiitembreak",
 	"version": "${version}",
 	"name": "Anti Item Break",
 	"description": "Prevents accidental item destruction by disabling the item once it reaches 1 durability.",
@@ -12,32 +12,32 @@
 		"sources": "https://github.com/FySjutton/AntiItemBreak"
 	},
 	"license": "Fy's Projects License",
-	"icon": "assets/antibreak/mod_icon.png",
+	"icon": "assets/antiitembreak/mod_icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
-			"anti.antibreak.AntiItemBreak"
+			"avox.antiitembreak.AntiItemBreak"
 		],
 		"modmenu": [
-			"anti.antibreak.ModMenuIntegration"
+          "avox.antiitembreak.config.ModMenuIntegration"
 		]
 	},
 	"mixins": [
-		"antibreak.mixins.json"
+      "antiitembreak.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.16.5",
-		"minecraft": ">=1.21.6",
+		"fabricloader": ">=0.16.0",
+		"minecraft": ">=1.21.9-",
 		"java": ">=21",
 		"fabric-api": "*"
 	},
 	"recommends": {
-		"modmenu": ">=15.0.0-"
+		"modmenu": ">=16.0.0-"
 	},
 	"custom": {
 		"modmenu": {
 			"links": {
-				"anti.antibreak.discord": "https://discord.gg/V2BXH2q6Rq"
+				"avox.antiitembreak.discord": "https://discord.gg/V2BXH2q6Rq"
 			},
 			"update_checker": true
 		}

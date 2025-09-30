@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "anti.antibreak.mixin",
+	"package": "avox.antiitembreak.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 	],

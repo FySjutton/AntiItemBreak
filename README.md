@@ -6,6 +6,7 @@
 
 [<img alt="discord-plural" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/social/discord-plural_64h.png">](https://discord.gg/tqn38v6w7k)
 [<img alt="fabric-api" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_64h.png">](https://modrinth.com/mod/fabric-api)
+[<img alt="yacl" height="56" src="https://i.ibb.co/HTLrwVft/cozy-64h-1.png" alt="cozy-64h-1">](https://modrinth.com/mod/yacl)
 [<img alt="modmenu" height="56" src="https://i.postimg.cc/MTv30Q1c/cozy-64h.png">](https://modrinth.com/mod/modmenu)
 
 
@@ -16,13 +17,13 @@ This fabric mod prevents accidental item destruction by disabling the item once 
 ---
 
 ### Low Durability Example
-![Broken Item example](https://cdn.modrinth.com/data/cached_images/2cf8bcfa22c9c96211f1166e56995d2333b13280_0.webp)
+![Broken Item example](https://i.ibb.co/PzQCd5Cg/2025-09-30-14-33-39.png)
 When the tool reaches a certain durability the tool completely stops working. An action bar is shown, and you can hold down a bypass button in order to continue using the tool (it will break).
 
 ---
 
 ### Configuration Screen
-![Configuration Screen](https://cdn.modrinth.com/data/cached_images/66459dbf7d1314dd1d9c7687162b3bdb88b91c30_0.webp)
+![Configuration Screen](https://i.ibb.co/1fYSKbPj/2025-09-30-14-36-25.png)
 The configuration screen allows you to enable the mod per item, with the choices: always enabled, only if the item is enchanted, or completely off. By standard, everything is set to on.
 
 ---
