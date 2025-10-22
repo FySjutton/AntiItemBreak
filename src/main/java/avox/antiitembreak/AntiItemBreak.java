@@ -30,7 +30,7 @@ public class AntiItemBreak implements ModInitializer {
 			Text.translatable("avox.antiitembreak.keybind.bypass_key").getString(),
 			InputUtil.Type.KEYSYM,
 			GLFW.GLFW_KEY_LEFT_ALT,
-			KeyBinding.Category.create(Identifier.of(Text.translatable("avox.antiitembreak.title").getString()))
+			KeyBinding.Category.create(Identifier.of("antiitembreak", "category.antiitembreak.antiitembreak"))
 	));
 
 	public static final LinkedHashMap<String, ArrayList<Item>> itemCategories = new LinkedHashMap<>();
