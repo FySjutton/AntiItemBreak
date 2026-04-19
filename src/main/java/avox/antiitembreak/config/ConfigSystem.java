@@ -10,13 +10,14 @@ import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.Item;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
 
-import static avox.antiitembreak.AntiItemBreak.itemCategories;
+import avox.antiitembreak.AntiItemBreak;
 
 public class ConfigSystem {
     public static final ConfigClassHandler<ConfigSystem> CONFIG = ConfigClassHandler.createBuilder(ConfigSystem.class)
@@ -26,36 +27,36 @@ public class ConfigSystem {
             .build();
 
     @SerialEntry public boolean enableMod = true;
-    @SerialEntry public int minimumDurability = 1;
+    @SerialEntry public int minimumDurability = 5;
 
     @SerialEntry public Map<String, EntryType> itemOverrides = new HashMap<>();
 
     public static Screen configScreen(Screen parent) {
         return YetAnotherConfigLib.create(CONFIG, (defaults, config, builder) -> builder
-                .title(Text.translatable("avox.antiitembreak.title"))
+                .title(Component.translatable("avox.antiitembreak.title"))
 
                 .category(ConfigCategory.createBuilder()
-                        .name(Text.translatable("avox.antiitembreak.config.tabs.general"))
+                        .name(Component.translatable("avox.antiitembreak.config.tabs.general"))
 
                         .option(Option.<Boolean>createBuilder()
-                                .name(Text.translatable("avox.antiitembreak.config.enable_mod"))
-                                .description(OptionDescription.of(Text.translatable("avox.antiitembreak.config.enable_mod.desc")))
+                                .name(Component.translatable("avox.antiitembreak.config.enable_mod"))
+                                .description(OptionDescription.of(Component.translatable("avox.antiitembreak.config.enable_mod.desc")))
                                 .binding(true, () -> config.enableMod, newVal -> config.enableMod = newVal)
                                 .controller(opt -> BooleanControllerBuilder.create(opt).coloured(true))
                                 .build())
 
                         .option(Option.<Integer>createBuilder()
-                                .name(Text.translatable("avox.antiitembreak.config.min_durability"))
-                                .description(OptionDescription.of(Text.translatable("avox.antiitembreak.config.min_durability.desc")))
-                                .binding(1, () -> config.minimumDurability, newVal -> config.minimumDurability = newVal)
+                                .name(Component.translatable("avox.antiitembreak.config.min_durability"))
+                                .description(OptionDescription.of(Component.translatable("avox.antiitembreak.config.min_durability.desc")))
+                                .binding(5, () -> config.minimumDurability, newVal -> config.minimumDurability = newVal)
                                 .controller(opt -> IntegerSliderControllerBuilder.create(opt)
-                                    .range(1, 25)
+                                    .range(1, 50)
                                     .step(1)
                                 )
                                 .build())
                         .build())
                 .category(ConfigCategory.createBuilder()
-                    .name(Text.translatable("avox.antiitembreak.config.tabs.filters"))
+                    .name(Component.translatable("avox.antiitembreak.config.tabs.filters"))
                     .groups(dynamicCategories(config))
                     .build()
                 )
@@ -65,14 +66,14 @@ public class ConfigSystem {
     private static List<OptionGroup> dynamicCategories(ConfigSystem config) {
         List<OptionGroup> categories = new ArrayList<>();
 
-        for (Map.Entry<String, ArrayList<Item>> entry : itemCategories.entrySet()) {
+        for (Map.Entry<String, ArrayList<Item>> entry : AntiItemBreak.getItemCategories().entrySet()) {
             String categoryName = Arrays.stream(entry.getKey().split("\\."))
                     .reduce((first, second) -> second)
-                    .orElse(Text.translatable("avox.antiitembreak.message.unknown_category").getString());
+                    .orElse(Component.translatable("avox.antiitembreak.message.unknown_category").getString());
             ArrayList<Item> items = entry.getValue();
 
             OptionGroup category = OptionGroup.createBuilder()
-                    .name(Text.literal(categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1)))
+                    .name(Component.literal(categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1)))
                     .options(categoryOptions(items, config))
                     .collapsed(true)
                     .build();
@@ -87,12 +88,12 @@ public class ConfigSystem {
         List<Option<?>> options = new ArrayList<>();
 
         for (Item item : items) {
-            String key = item.getTranslationKey();
+            String key = item.getDescriptionId();
 
             options.add(
                     Option.<EntryType>createBuilder()
-                            .name(Text.translatable(key))
-                            .description(OptionDescription.of(Text.translatable("avox.antiitembreak.message.requirement_text", item.getName())))
+                            .name(Component.translatable(key))
+                            .description(OptionDescription.of(Component.translatable("avox.antiitembreak.message.requirement_text", item.getName(new ItemStack(item)))))
                             .binding(
                                     EntryType.ALWAYS,
                                     () -> config.itemOverrides.getOrDefault(key, EntryType.ALWAYS),
