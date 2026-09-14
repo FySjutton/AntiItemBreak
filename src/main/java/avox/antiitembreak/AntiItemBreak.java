@@ -1,7 +1,6 @@
 package avox.antiitembreak;
 
 import avox.antiitembreak.config.ConfigSystem;
-import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -85,8 +84,10 @@ public class AntiItemBreak implements ModInitializer {
 
 	private static void updateCategoryList() {
 		itemCategories.clear();
+
         for (Item item : BuiltInRegistries.ITEM) {
             ItemStack stack = item.getDefaultInstance();
+
             if (stack.isDamageableItem()) {
                 // Block all armor pieces
                 if (stack.get(DataComponents.EQUIPPABLE) == null) {

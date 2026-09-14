@@ -5,7 +5,6 @@ import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
 import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
-import dev.isxander.yacl3.api.controller.SliderControllerBuilder;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
@@ -18,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.*;
 
 import avox.antiitembreak.AntiItemBreak;
+import net.minecraft.world.item.Items;
 
 public class ConfigSystem {
     public static final ConfigClassHandler<ConfigSystem> CONFIG = ConfigClassHandler.createBuilder(ConfigSystem.class)
@@ -32,7 +32,9 @@ public class ConfigSystem {
     @SerialEntry public Map<String, EntryType> itemOverrides = new HashMap<>();
 
     public static Screen configScreen(Screen parent) {
-        return YetAnotherConfigLib.create(CONFIG, (defaults, config, builder) -> builder
+        boolean componentsInitialized = Items.AIR.builtInRegistryHolder().areComponentsBound();
+
+        return YetAnotherConfigLib.create(CONFIG, (defaults, configSystem, builder) -> builder
                 .title(Component.translatable("avox.antiitembreak.title"))
 
                 .category(ConfigCategory.createBuilder()
@@ -41,24 +43,31 @@ public class ConfigSystem {
                         .option(Option.<Boolean>createBuilder()
                                 .name(Component.translatable("avox.antiitembreak.config.enable_mod"))
                                 .description(OptionDescription.of(Component.translatable("avox.antiitembreak.config.enable_mod.desc")))
-                                .binding(true, () -> config.enableMod, newVal -> config.enableMod = newVal)
+                                .binding(true, () -> configSystem.enableMod, newVal -> configSystem.enableMod = newVal)
                                 .controller(opt -> BooleanControllerBuilder.create(opt).coloured(true))
                                 .build())
 
                         .option(Option.<Integer>createBuilder()
                                 .name(Component.translatable("avox.antiitembreak.config.min_durability"))
                                 .description(OptionDescription.of(Component.translatable("avox.antiitembreak.config.min_durability.desc")))
-                                .binding(5, () -> config.minimumDurability, newVal -> config.minimumDurability = newVal)
+                                .binding(5, () -> configSystem.minimumDurability, newVal -> configSystem.minimumDurability = newVal)
                                 .controller(opt -> IntegerSliderControllerBuilder.create(opt)
-                                    .range(1, 50)
-                                    .step(1)
+                                        .range(1, 50)
+                                        .step(1)
                                 )
                                 .build())
                         .build())
                 .category(ConfigCategory.createBuilder()
-                    .name(Component.translatable("avox.antiitembreak.config.tabs.filters"))
-                    .groups(dynamicCategories(config))
-                    .build()
+                        .name(Component.translatable("avox.antiitembreak.config.tabs.filters"))
+                        .groups(componentsInitialized
+                                ? dynamicCategories(configSystem)
+                                : List.of(OptionGroup.createBuilder()
+                                .name(Component.translatable("avox.antiitembreak.config.not_loaded"))
+                                .option(LabelOption.createBuilder()
+                                        .line(Component.translatable("avox.antiitembreak.config.not_loaded_text"))
+                                        .build())
+                                .build()))
+                        .build()
                 )
         ).generateScreen(parent);
     }

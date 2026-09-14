@@ -1,1 +1,1 @@
-Updated the mod to 26.1+ and switched to Mojang mappings
+Fixed the game crashing when opening the config screen was open, without components having been loaded first.

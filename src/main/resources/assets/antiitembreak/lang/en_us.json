@@ -1,5 +1,6 @@
 {
   "key.category.antiitembreak.category.antiitembreak.antiitembreak": "Anti Item Break",
+  "avox.antiitembreak.title": "Anti Item Break",
   "avox.antiitembreak.discord": "Discord",
 
   "avox.antiitembreak.config.tabs.general": "General",
@@ -21,5 +22,8 @@
 
   "avox.antiitembreak.type.always": "Always",
   "avox.antiitembreak.type.enchanted_only": "Enchanted Only",
-  "avox.antiitembreak.type.never": "Never"
+  "avox.antiitembreak.type.never": "Never",
+
+  "avox.antiitembreak.config.not_loaded": "Items aren't loaded yet.",
+  "avox.antiitembreak.config.not_loaded_text": "Minecraft have not loaded the components yet, try joining a server and then opening this screen again!"
 }
