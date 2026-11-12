@@ -18,13 +18,13 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import java.util.*;
 
 public class AntiItemBreak implements ModInitializer {
 	private static final KeyMapping.Category category = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("antiitembreak", "category.antiitembreak.antiitembreak"));
-	public static final KeyMapping bypassKeybind = new KeyMapping(Component.translatable("avox.antiitembreak.keybind.bypass_key").getString(), GLFW.GLFW_KEY_LEFT_ALT, category);
+	public static final KeyMapping bypassKeybind = new KeyMapping(Component.translatable("avox.antiitembreak.keybind.bypass_key").getString(), InputConstants.KEY_LALT, category);
 
 	private static final LinkedHashMap<String, ArrayList<Item>> itemCategories = new LinkedHashMap<>();
 	private static boolean categoriesInitialized = false;

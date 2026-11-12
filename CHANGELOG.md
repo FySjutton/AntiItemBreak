@@ -1,1 +1,1 @@
-Fixed the game crashing when opening the config screen was open, without components having been loaded first.
+Updated the mod to 26.3
